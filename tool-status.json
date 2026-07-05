@@ -1,4 +1,4 @@
 {
-  "tool_open": false,
-  "message": "Tool đang bị khóa"
+  "tool_open": true,
+  "message": "Tool đang được phép chạy"
 }
