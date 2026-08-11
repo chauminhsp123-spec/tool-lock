@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "global_enabled": true,
+  "message": "Tool đang bảo trì. Vui lòng liên hệ Admin.",
+  "keys": {
+    "C168": {
+      "enabled": true,
+      "expires": null,
+      "message": ""
+    },
+    "SC88": {
+      "enabled": true,
+      "expires": null,
+      "message": ""
+    },
+    "78WIN": {
+      "enabled": true,
+      "expires": null,
+      "message": ""
+    }
+  },
+  "updated_at": "2026-08-12T03:00:03+07:00"
+}
