@@ -1,0 +1,5 @@
+pyinstaller==6.22.2
+requests>=2.32,<3
+websocket-client>=1.8,<2
+pycryptodome>=3.23,<4
+certifi>=2025.8.3
