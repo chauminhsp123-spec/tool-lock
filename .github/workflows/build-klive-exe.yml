@@ -1,0 +1,61 @@
+name: Build Windows EXE
+
+on:
+  push:
+    paths:
+      - "klive-exe-build-20260904/**"
+      - ".github/workflows/build-klive-exe.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          architecture: "x64"
+          cache: "pip"
+          cache-dependency-path: "klive-exe-build-20260904/requirements-build.txt"
+
+      - name: Install build dependencies
+        run: python -m pip install --disable-pip-version-check -r klive-exe-build-20260904/requirements-build.txt
+
+      - name: Build one-file GUI executable
+        working-directory: klive-exe-build-20260904
+        run: python -m PyInstaller --noconfirm --clean KLive_AllRoom_V5.spec
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "klive-exe-build-20260904/dist/KLive_AllRoom_V5_24-7.exe"
+          $item = Get-Item $exe
+          if ($item.Length -lt 1000000) { throw "EXE output is unexpectedly small" }
+          Get-FileHash $exe -Algorithm SHA256 | Format-List
+          Write-Host "EXE_SIZE=$($item.Length)"
+
+      - name: Smoke-test application startup
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "klive-exe-build-20260904/dist/KLive_AllRoom_V5_24-7.exe"
+          $process = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 12
+          if ($process.HasExited) {
+            throw "Application exited during startup with code $($process.ExitCode)"
+          }
+          Stop-Process -Id $process.Id -Force
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: KLive_AllRoom_V5_24-7_Windows_x64
+          path: klive-exe-build-20260904/dist/KLive_AllRoom_V5_24-7.exe
+          if-no-files-found: error
+          compression-level: 0
